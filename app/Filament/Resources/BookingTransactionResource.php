@@ -120,12 +120,10 @@ class BookingTransactionResource extends Resource
                                 ->maxLength(255),
 
                             Forms\Components\TextInput::make('phone')
-                                ->tel()
                                 ->required()
                                 ->maxLength(20),
 
                             Forms\Components\TextInput::make('email')
-                                ->email()
                                 ->required()
                                 ->maxLength(255),
 

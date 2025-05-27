@@ -18,5 +18,6 @@ Route::apiResource('/services', HomeServiceController::class);
 Route::get('category/{category:slug}', [CategoryController::class, 'show']);
 Route::apiResource('/categories', CategoryController::class);
 
-Route::post('/booking-transactions', [BookingTransactionController::class, 'store']);
+Route::post('/booking-transaction', [BookingTransactionController::class, 'store']);
+
 Route::post('/check-booking', [BookingTransactionController::class, 'booking_details']);

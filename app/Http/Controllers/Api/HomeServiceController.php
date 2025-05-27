@@ -38,4 +38,14 @@ class HomeServiceController extends Controller
 
         return new HomeServiceApiResource($homeService);
     }
+
+    // public function show(HomeService $homeService)
+    // {
+    //     dd($homeService);  
+
+    //     dd($homeService->slug); 
+
+    //     $homeService->load(['category', 'benefits', 'testimonials']);
+    //     return new HomeServiceApiResource($homeService);
+    // }
 }
