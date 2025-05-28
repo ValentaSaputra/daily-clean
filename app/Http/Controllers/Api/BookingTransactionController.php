@@ -16,6 +16,7 @@ class BookingTransactionController extends Controller
     public function store(StoreBookingTransactionRequest $request)
     {
         try {
+
             // Validate the request data
             $validatedData = $request->validated();
 
@@ -26,7 +27,7 @@ class BookingTransactionController extends Controller
             }
 
             // Retrive the service ID from the request
-            $serviceId = $request->input('service_ids'); // no need to decord json, as it is already an array
+            $serviceIds = $request->input('service_ids'); // no need to decord json, as it is already an array
 
             if (empty($serviceIds)) {
                 return response()->json(['message' => 'No services selected'], 400);
@@ -43,9 +44,11 @@ class BookingTransactionController extends Controller
             $tax = $totalPrice * 0.12;
             $grandTotal = $totalPrice + $tax;
 
+            $validatedData['total_amount'] = $grandTotal;
+
             // use carbon to set schedule_at to tommorow's date
             // agar safety saat dari frontend menginputkan waktu yang sudah lewat / tahun lalu
-            $validatedData['schedule_at'] = Carbon::tommorow()->toDateString();
+            $validatedData['schedule_at'] = Carbon::tomorrow()->toDateString();
 
             // populate the booking transaction data
             $validatedData['total_price'] = $grandTotal;
