@@ -29,7 +29,7 @@ export interface Category {
     name: string,
     slug: string,
     photo: string,
-    homeServices_count: number,
+    home_services_count: number,
     home_services: HomeService[],
     popular_services: HomeService[],
 }

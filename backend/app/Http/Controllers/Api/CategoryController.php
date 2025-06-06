@@ -12,7 +12,7 @@ class CategoryController extends Controller
     //
     public function index(Request $request)
     {
-        $categories = Category::query();
+        $categories = Category::withCount(['homeServices']);
 
         if ($request->has('limit')) {
             $categories->limit($request->input('limit'));

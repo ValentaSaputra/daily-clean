@@ -1,5 +1,3 @@
 export default function MyCartPage() {
-    return (
-        <p>MyCart Page</p>
-    );
+  return <p>MyCart Page</p>;
 }
