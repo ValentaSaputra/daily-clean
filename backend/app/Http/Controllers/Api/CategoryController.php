@@ -25,7 +25,8 @@ class CategoryController extends Controller
     {
         // eager load to handle n+1 query problem
         // load home services
-        $category->load(['homeServices']);
+        $category->load(['homeServices', 'popularServices']);
+        $category->loadCount(['homeServices']);
 
         return new CategoryApiResource($category);
     }
