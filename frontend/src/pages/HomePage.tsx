@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { HomeService, Category } from "../types/type";
 import apiClinet from "../services/apiServices";
+import { Link } from "react-router-dom";
 
 const fetchCategories = async () => {
   const response = await apiClinet.get("/categories");
@@ -124,7 +125,7 @@ export default function HomePage() {
                     key={category.id}
                     className="swiper-slide !w-fit"
                   >
-                    <a href="category.html" className="card">
+                    <Link to={`/category/${category.slug}`} className="card">
                       <div className="shrink-0 space-y-3 rounded-[24px] border border-x-shujia-graylight bg-white py-4 text-center transition-all duration-300 hover:border-shujia-orange">
                         <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
                           <img
@@ -140,7 +141,7 @@ export default function HomePage() {
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </SwiperSlide>
                 ))
               : "belum ada data terbaru"}
@@ -171,7 +172,7 @@ export default function HomePage() {
             {services.length > 0
               ? services.map((service) => (
                   <SwiperSlide key={service.id} className="swiper-slide !w-fit">
-                    <a href="service-details.html" className="card">
+                    <Link to={`/service/${service.slug}`} className="card">
                       <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
                         <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
                           <div className="flex items-center gap-[2px]">
@@ -220,7 +221,7 @@ export default function HomePage() {
                           </strong>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </SwiperSlide>
                 ))
               : "belum ada data terbaru"}
