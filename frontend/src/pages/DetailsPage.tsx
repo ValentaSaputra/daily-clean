@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { HomeService } from "../types/type";
+import type { CartItem, HomeService } from "../types/type";
 import apiClinet from "../services/apiServices";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -10,6 +10,17 @@ export default function DetailsPage() {
   const [service, setService] = useState<HomeService | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
+
+  // load cart from localstorage on page load
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
 
   useEffect(() => {
     apiClinet
@@ -23,6 +34,31 @@ export default function DetailsPage() {
         setLoading(false);
       });
   }, [slug]);
+
+  const handleAddToCart = () => {
+    if (service) {
+      setIsAdding(true);
+      const itemExists = cart.find((item) => item.service_id === service.id);
+      if (itemExists) {
+        alert("Jasa sudah tersedia di cart");
+        setIsAdding(false);
+      } else {
+        const newCartItem: CartItem = {
+          service_id: service.id,
+          slug: service.slug,
+          quantity: 1,
+        };
+
+        const updatedCart = [...cart, newCartItem];
+        setCart(updatedCart);
+
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+        alert("Jasa berhasil ditambahkan ke cart");
+        setIsAdding(false);
+      }
+    }
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -299,11 +335,15 @@ export default function DetailsPage() {
                 Refund Guarantee
               </p>
             </div>
-            <a href="my-cart.html" className="w-full">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="w-full"
+            >
               <p className="w-full rounded-full bg-shujia-orange px-[18px] py-[14px] text-center font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
-                Add to Cart
+                {isAdding ? "Adding..." : "Add to Cart"}
               </p>
-            </a>
+            </button>
           </div>
         </div>
       </nav>
