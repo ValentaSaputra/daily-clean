@@ -87,7 +87,7 @@ export default function HomePage() {
             </a>
             <ul className="flex items-center gap-[10px]">
               <li className="shrink-0">
-                <a href="#">
+                <Link to={"/cart"}>
                   <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-shujia-graylight">
                     <img
                       src="assets/images/icons/cart.svg"
@@ -95,7 +95,7 @@ export default function HomePage() {
                       className="h-[22px] w-[22px] shrink-0"
                     />
                   </div>
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
