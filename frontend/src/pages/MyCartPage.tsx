@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HomeService, type CartItem } from "../types/type";
+import type { HomeService, CartItem } from "../types/type";
 import apiClinet from "../services/apiServices";
 import { Link } from "react-router-dom";
 
@@ -8,6 +8,8 @@ export default function MyCartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -62,6 +64,36 @@ export default function MyCartPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
+
+  // identifyernya menggunakan slug
+  const handleRemoveItem = (slug: string) => {
+    const updatedCart = cart.filter((item) => item.slug !== slug);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    setServiceDetails((prevDetails) =>
+      prevDetails.filter((service) => service.slug !== slug)
+    );
+  };
+
+  const subtotal = serviceDetails.reduce(
+    (acc, service) => acc + service.price,
+    0
+    // 0 , 1000. 1000 + 2000, 3000 dst
+  );
+  const tax = subtotal * 0.12;
+  const total = subtotal + tax;
+
   if (loading) {
     return <p>Loading data...</p>;
   }
@@ -69,6 +101,14 @@ export default function MyCartPage() {
   if (error) {
     return <p>Error loading data: {error}</p>;
   }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
   const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
 
@@ -83,21 +123,30 @@ export default function MyCartPage() {
       </div>
       <section
         id="NavTop"
-        className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+        className={`fixed left-0 right-0 z-30 transition-all duration-300 
+          ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
           <div
             id="ContainerNav"
-            className="relative flex h-[68px] items-center justify-center transition-all duration-300"
+            className={`relative flex h-[68px] items-center justify-center transition-all duration-300 ${
+              isScrolled
+                ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
+                : "bg-transparent"
+            }`}
           >
             <Link
               to={`/`}
               id="BackA"
-              className="absolute left-0 transition-all duration-300"
+              className={`absolute left-0 transition-all duration-300  ${
+                isScrolled ? "pl-3" : ""
+              }`}
             >
               <div
                 id="Back"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white ${
+                  isScrolled ? "border border-shujia-graylight " : ""
+                }`}
               >
                 <img
                   src="/assets/images/icons/back.svg"
@@ -108,7 +157,9 @@ export default function MyCartPage() {
             </Link>
             <h1
               id="Title"
-              className="font-semibold text-white transition-all duration-300"
+              className={`font-semibold transition-all duration-300 ${
+                isScrolled ? "" : "text-white"
+              }`}
             >
               My Cart
             </h1>
@@ -121,7 +172,7 @@ export default function MyCartPage() {
           className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Home Services</h2>
+            <h2 className="font-semibold">Cleaning Services</h2>
             <button type="button" data-expand="HomeServicesJ">
               <img
                 src="/assets/images/icons/bottom-booking-form.svg"
@@ -131,143 +182,64 @@ export default function MyCartPage() {
             </button>
           </div>
           <div className="flex flex-col gap-4" id="HomeServicesJ">
-            <div className="card flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-[90px] w-[80px] shrink-0 items-center justify-center overflow-hidden rounded-3xl">
-                  <img
-                    src="/assets/images/thumbnails/clean-mini-cart.png"
-                    alt="image"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="line-clamp-2 h-[42px] text-sm font-semibold leading-[21px]">
-                    Home Family Theater Best Lights Installation
-                  </h3>
-                  <div className="flex items-center gap-[6px]">
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/coint.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        Rp 8.489.391
-                      </p>
+            {serviceDetails.length > 0
+              ? serviceDetails.map((service, index) => (
+                  <div key={service.id} className="flex flex-col gap-4">
+                    <div className="card flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-[90px] w-[80px] shrink-0 items-center justify-center overflow-hidden rounded-3xl">
+                          <img
+                            src={`${BASE_URL}/${service.thumbnail}`}
+                            alt="image"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <h3 className="line-clamp-2 h-[42px] text-sm font-semibold leading-[21px]">
+                            {service.name}
+                          </h3>
+                          <div className="flex items-center gap-[6px]">
+                            <div className="flex items-center gap-1">
+                              <img
+                                src="/assets/images/icons/coint.svg"
+                                alt="icon"
+                                className="h-4 w-4 shrink-0"
+                              />
+                              <p className="text-xs leading-[18px] text-shujia-gray">
+                                {formatCurrency(service.price)}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <img
+                                src="/assets/images/icons/clock-cart.svg"
+                                alt="icon"
+                                className="h-4 w-4 shrink-0"
+                              />
+                              <p className="text-xs leading-[18px] text-shujia-gray">
+                                {service.duration} Hours
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveItem(service.slug)}
+                        type="button"
+                        className="shrink-0"
+                      >
+                        <img
+                          src="/assets/images/icons/garbage.svg"
+                          alt="icon"
+                          className="size-[32px] shrink-0"
+                        />
+                      </button>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/clock-cart.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        15 Hours
-                      </p>
-                    </div>
+                    {index < serviceDetails.length - 1 && (
+                      <hr className="border-shujia-graylight" />
+                    )}
                   </div>
-                </div>
-              </div>
-              <button type="button" className="shrink-0">
-                <img
-                  src="/assets/images/icons/garbage.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-              </button>
-            </div>
-            <hr className="border-shujia-graylight" />
-            <div className="card flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-[90px] w-[80px] shrink-0 items-center justify-center overflow-hidden rounded-3xl">
-                  <img
-                    src="/assets/images/thumbnails/swim-mini-cart.png"
-                    alt="image"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="line-clamp-2 h-[42px] text-sm font-semibold leading-[21px]">
-                    Home Family Theater Best Lights Installation
-                  </h3>
-                  <div className="flex items-center gap-[6px]">
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/coint.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        Rp 8.489.391
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/clock-cart.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button type="button" className="shrink-0">
-                <img
-                  src="/assets/images/icons/garbage.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-              </button>
-            </div>
-            <hr className="border-shujia-graylight" />
-            <div className="card flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-[90px] w-[80px] shrink-0 items-center justify-center overflow-hidden rounded-3xl">
-                  <img
-                    src="/assets/images/thumbnails/write-mini-cart.png"
-                    alt="image"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="line-clamp-2 h-[42px] text-sm font-semibold leading-[21px]">
-                    Home Family Theater Best Lights Installation
-                  </h3>
-                  <div className="flex items-center gap-[6px]">
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/coint.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        Rp 8.489.391
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img
-                        src="/assets/images/icons/clock-cart.svg"
-                        alt="icon"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      <p className="text-xs leading-[18px] text-shujia-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button type="button" className="shrink-0">
-                <img
-                  src="/assets/images/icons/garbage.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-              </button>
-            </div>
+                ))
+              : "belum ada service yang ditambahkan ke keranjang"}
           </div>
         </section>
         <section
@@ -294,7 +266,10 @@ export default function MyCartPage() {
                 />
                 <p className="text-shujia-gray">Sub Total</p>
               </div>
-              <strong className="font-semibold">Rp 180.394.392</strong>
+              <strong className="font-semibold">
+                {" "}
+                {formatCurrency(subtotal)}
+              </strong>
             </div>
             <hr className="border-shujia-graylight" />
             <div className="flex justify-between">
@@ -304,9 +279,9 @@ export default function MyCartPage() {
                   alt="icon"
                   className="h-[24px] w-[24px] shrink-0"
                 />
-                <p className="text-shujia-gray">Tax 11%</p>
+                <p className="text-shujia-gray">PPN Tax 12%</p>
               </div>
-              <strong className="font-semibold">Rp 18.495.699</strong>
+              <strong className="font-semibold">{formatCurrency(tax)}</strong>
             </div>
             <hr className="border-shujia-graylight" />
             <div className="flex justify-between">
@@ -334,21 +309,13 @@ export default function MyCartPage() {
             </div>
           </div>
         </section>
-        <section id="Adverticement">
-          <a href="#">
-            <img
-              src="/assets/images/backgrounds/adverticement.png"
-              alt="icon"
-            />
-          </a>
-        </section>
       </div>
       <nav className="fixed bottom-5 left-0 right-0 z-30 mx-auto w-full">
         <div className="mx-auto max-w-[640px] px-5">
           <div className="flex items-center gap-[45px] rounded-[24px] bg-shujia-black px-[20px] py-[14px]">
             <div>
               <strong className="whitespace-nowrap text-[22px] font-extrabold leading-[33px] text-white">
-                Rp 8.394.391
+                {formatCurrency(total)}
               </strong>
               <p className="text-sm leading-[21px] text-white">Grand Total</p>
             </div>

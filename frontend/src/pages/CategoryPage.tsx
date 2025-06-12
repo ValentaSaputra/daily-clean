@@ -71,7 +71,7 @@ export default function CategoryPage() {
       </div>
       <section
         id="NavTop"
-        className={`fixed left-0 right-0  z-30 transition-all duration-300
+        className={`fixed left-0 right-0 z-30 transition-all duration-300
           ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
@@ -84,7 +84,7 @@ export default function CategoryPage() {
                   : "bg-transparent"
               }`}
           >
-            <a href="index.html">
+            <Link to={`/`}>
               <div
                 id="Back"
                 className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
@@ -96,7 +96,7 @@ export default function CategoryPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <h2
               id="Title"
               className={`font-semibold transition-all duration-300
@@ -104,7 +104,7 @@ export default function CategoryPage() {
             >
               Explore
             </h2>
-            <a href="#">
+            <Link to={`/cart`}>
               <div
                 id="Cart"
                 className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
@@ -116,7 +116,7 @@ export default function CategoryPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
