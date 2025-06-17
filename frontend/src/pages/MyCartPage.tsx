@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { HomeService, CartItem } from "../types/type";
 import apiClinet from "../services/apiServices";
 import { Link } from "react-router-dom";
+import AccordionSection from "../components/AccordionSection";
 
 export default function MyCartPage() {
   const [serviceDetails, setServiceDetails] = useState<HomeService[]>([]);
@@ -167,20 +168,10 @@ export default function MyCartPage() {
         </div>
       </section>
       <div className="relative flex flex-col gap-[20px] px-5 pt-[100px]">
-        <section
-          id="HomeServices"
-          className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+        <AccordionSection
+          title="Home Services"
+          iconSrc="/assets/images/icons/bottom-booking-form.svg"
         >
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Cleaning Services</h2>
-            <button type="button" data-expand="HomeServicesJ">
-              <img
-                src="/assets/images/icons/bottom-booking-form.svg"
-                alt="icon"
-                className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-              />
-            </button>
-          </div>
           <div className="flex flex-col gap-4" id="HomeServicesJ">
             {serviceDetails.length > 0
               ? serviceDetails.map((service, index) => (
@@ -241,21 +232,12 @@ export default function MyCartPage() {
                 ))
               : "belum ada service yang ditambahkan ke keranjang"}
           </div>
-        </section>
-        <section
-          id="BookingDetails"
-          className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+        </AccordionSection>
+
+        <AccordionSection
+          title="Booking Details"
+          iconSrc="/assets/images/icons/bottom-booking-form.svg"
         >
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Booking Details</h2>
-            <button type="button" data-expand="BookingDetailsJ">
-              <img
-                src="/assets/images/icons/bottom-booking-form.svg"
-                alt="icon"
-                className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-              />
-            </button>
-          </div>
           <div className="flex flex-col gap-4" id="BookingDetailsJ">
             <div className="flex justify-between">
               <div className="flex items-center gap-[10px]">
@@ -308,7 +290,7 @@ export default function MyCartPage() {
               <strong className="font-semibold">Free for All</strong>
             </div>
           </div>
-        </section>
+        </AccordionSection>
       </div>
       <nav className="fixed bottom-5 left-0 right-0 z-30 mx-auto w-full">
         <div className="mx-auto max-w-[640px] px-5">
