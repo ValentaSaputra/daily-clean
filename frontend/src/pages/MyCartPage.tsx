@@ -301,11 +301,15 @@ export default function MyCartPage() {
               </strong>
               <p className="text-sm leading-[21px] text-white">Grand Total</p>
             </div>
-            <a href="booking-form.html" className="w-full">
-              <p className="w-full rounded-full bg-shujia-orange px-[18px] py-[14px] text-center font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
-                Continue
-              </p>
-            </a>
+            {cart.length != 0 ? (
+              <Link to={"/booking"} className="w-full">
+                <p className="w-full rounded-full bg-shujia-orange px-[18px] py-[14px] text-center font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
+                  Continue
+                </p>
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </nav>
