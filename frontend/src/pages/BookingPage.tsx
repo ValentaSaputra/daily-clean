@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import type { BookingFormData } from "../types/type";
 import type { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { bookingSchema } from "../types/validationBooking";
+import AccordionSection from "../components/AccordionSection";
 
 export default function BookingPage() {
   const [formData, setFormData] = useState<BookingFormData>({
@@ -77,6 +78,20 @@ export default function BookingPage() {
     setFormErrors([]);
   };
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
+
   return (
     <main className="relative min-h-screen mx-auto w-full max-w-[640px] bg-[#F4F5F7]">
       <div id="Background" className="absolute left-0 right-0 top-0">
@@ -88,21 +103,30 @@ export default function BookingPage() {
       </div>
       <section
         id="NavTop"
-        className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+        className={`fixed left-0 right-0 z-30 transition-all duration-300 
+          ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
           <div
             id="ContainerNav"
-            className="relative flex h-[68px] items-center justify-center transition-all duration-300"
+            className={`relative flex h-[68px] items-center justify-center transition-all duration-300 ${
+              isScrolled
+                ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
+                : "bg-transparent"
+            }`}
           >
-            <a
+            <Link
+              to={"/cart"}
               id="BackA"
-              href="my-cart.html"
-              className="absolute left-0 transition-all duration-300"
+              className={`absolute left-0 transition-all duration-300  ${
+                isScrolled ? "pl-3" : ""
+              }`}
             >
               <div
                 id="Back"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white ${
+                  isScrolled ? "border border-shujia-graylight " : ""
+                }`}
               >
                 <img
                   src="/assets/images/icons/back.svg"
@@ -110,10 +134,12 @@ export default function BookingPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <h2
               id="Title"
-              className="font-semibold text-white transition-all duration-300"
+              className={`font-semibold transition-all duration-300 ${
+                isScrolled ? "" : "text-white"
+              }`}
             >
               Booking Services
             </h2>
@@ -174,20 +200,10 @@ export default function BookingPage() {
             <p className="text-white">Lorem dolor si amet data asli</p>
           </header>
           <div className="mt-[20px] flex flex-col gap-5">
-            <section
-              id="WorkingSchedule"
-              className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+            <AccordionSection
+              title="Working Schedule"
+              iconSrc="/assets/images/icons/bottom-booking-form.svg"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Working Schedule</h3>
-                <button type="button" data-expand="WorkingScheduleJ">
-                  <img
-                    src="/assets/images/icons/bottom-booking-form.svg"
-                    alt="icon"
-                    className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                  />
-                </button>
-              </div>
               <div id="WorkingScheduleJ" className="flex flex-col gap-4">
                 <label className="flex flex-col gap-2">
                   <h4 className="font-semibold">Date</h4>
@@ -244,21 +260,12 @@ export default function BookingPage() {
                   </div>
                 </label>
               </div>
-            </section>
-            <section
-              id="PersonalInformations"
-              className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+            </AccordionSection>
+
+            <AccordionSection
+              title="Personal Informations"
+              iconSrc="/assets/images/icons/bottom-booking-form.svg"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Personal Informations</h3>
-                <button type="button" data-expand="PersonalInformationsJ">
-                  <img
-                    src="/assets/images/icons/bottom-booking-form.svg"
-                    alt="icon"
-                    className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                  />
-                </button>
-              </div>
               <div className="flex flex-col gap-4" id="PersonalInformationsJ">
                 <label className="flex flex-col gap-2">
                   <h4 className="font-semibold">Full Name</h4>
@@ -351,29 +358,20 @@ export default function BookingPage() {
                   </div>
                 </label>
               </div>
-            </section>
-            <section
-              id="YourHomeAddress"
-              className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+            </AccordionSection>
+
+            <AccordionSection
+              title="Your Home Address"
+              iconSrc="/assets/images/icons/bottom-booking-form.svg"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Your Home Address</h3>
-                {formErrors.find((error) => error.path.includes("address")) && (
-                  <p className="text-red-500 text-sm">
-                    {
-                      formErrors.find((error) => error.path.includes("address"))
-                        ?.message
-                    }
-                  </p>
-                )}
-                <button type="button" data-expand="YourHomeAddressJ">
-                  <img
-                    src="/assets/images/icons/bottom-booking-form.svg"
-                    alt="icon"
-                    className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                  />
-                </button>
-              </div>
+              {formErrors.find((error) => error.path.includes("address")) && (
+                <p className="text-red-500 text-sm">
+                  {
+                    formErrors.find((error) => error.path.includes("address"))
+                      ?.message
+                  }
+                </p>
+              )}
               <div id="YourHomeAddressJ" className="flex flex-col gap-4">
                 <label className="flex flex-col gap-2">
                   <h4 className="font-semibold">Address</h4>
@@ -462,7 +460,7 @@ export default function BookingPage() {
                   </div>
                 </label>
               </div>
-            </section>
+            </AccordionSection>
           </div>
           <button
             type="submit"
