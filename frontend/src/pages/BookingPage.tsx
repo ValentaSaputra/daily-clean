@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { BookingFormData } from "../types/type";
 import type { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import { bookingSchema } from "../types/validationBooking";
 
 export default function BookingPage() {
   const [formData, setFormData] = useState<BookingFormData>({
@@ -32,6 +33,49 @@ export default function BookingPage() {
   }, [navigate]);
 
   const cities = ["Semarang", "Demak", "Ungaran"];
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    console.log(tomorrow);
+    // YYYY-MM-DDTHH:MM:SS.sssZ
+    const formattedDate = tomorrow.toISOString().split("T")[0]; //Format as YYYY-MM-DD
+
+    setFormData((prev) => ({
+      ...prev,
+      schedule_at: formattedDate,
+    }));
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const validataion = bookingSchema.safeParse(formData);
+
+    if (!validataion.success) {
+      setFormErrors(validataion.error.issues);
+      return;
+    }
+
+    localStorage.setItem("bookingData", JSON.stringify(formData));
+    alert("Booking information saved");
+
+    navigate("/payment");
+
+    setFormErrors([]);
+  };
 
   return (
     <main className="relative min-h-screen mx-auto w-full max-w-[640px] bg-[#F4F5F7]">
@@ -122,7 +166,7 @@ export default function BookingPage() {
         </div>
       </section>
       <div className="relative mt-[44px] flex flex-col px-5 pb-5">
-        <form action="payment.html">
+        <form onSubmit={handleSubmit}>
           <header className="flex flex-col gap-[2px]">
             <h1 className="text-[26px] font-extrabold leading-[39px] text-white">
               Start Booking
@@ -151,16 +195,16 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/date-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <input
                       value={formData.schedule_at}
+                      name="schedule_at"
                       onChange={handleChange}
                       required
                       className="h-full w-full rounded-full bg-[#F4F5F7] pl-[50px] font-semibold focus:outline-none"
                       readOnly
                       type="text"
-                      defaultValue="17 October 2024"
                     />
                   </div>
                 </label>
@@ -170,24 +214,33 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/clock-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <select
                       value={formData.started_time}
                       onChange={handleChange}
-                      name=""
+                      name="started_time"
                       id=""
                       className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
                     >
-                      <option value="" disabled selected>
-                        Enter the time
-                      </option>
+                      <option value="">Enter the time</option>
                       <option value="08:00">08:00</option>
                       <option value="10:00">10:00</option>
                       <option value="12:00">12:00</option>
                       <option value="14:00">14:00</option>
                       <option value="16:00">16:00</option>
                     </select>
+                    {formErrors.find((error) =>
+                      error.path.includes("started_time")
+                    ) && (
+                      <p className="text-red-500 text-sm">
+                        {
+                          formErrors.find((error) =>
+                            error.path.includes("started_time")
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </div>
                 </label>
               </div>
@@ -213,16 +266,28 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/profil-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <input
                       required
+                      name="name"
                       value={formData.name}
                       onChange={handleChange}
                       className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
                       placeholder="Write your complete name"
                       type="text"
                     />
+                    {formErrors.find((error) =>
+                      error.path.includes("name")
+                    ) && (
+                      <p className="text-red-500 text-sm">
+                        {
+                          formErrors.find((error) =>
+                            error.path.includes("name")
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </div>
                 </label>
                 <label className="flex flex-col gap-2">
@@ -231,16 +296,28 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/amplop-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <input
                       required
+                      name="email"
                       value={formData.email}
                       onChange={handleChange}
                       className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
                       placeholder="Write your email"
                       type="email"
                     />
+                    {formErrors.find((error) =>
+                      error.path.includes("email")
+                    ) && (
+                      <p className="text-red-500 text-sm">
+                        {
+                          formErrors.find((error) =>
+                            error.path.includes("email")
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </div>
                 </label>
                 <label className="flex flex-col gap-2">
@@ -249,9 +326,10 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/telepon-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <input
+                      name="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
@@ -259,6 +337,17 @@ export default function BookingPage() {
                       className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
                       placeholder="Write your active number"
                     />
+                    {formErrors.find((error) =>
+                      error.path.includes("phone")
+                    ) && (
+                      <p className="text-red-500 text-sm">
+                        {
+                          formErrors.find((error) =>
+                            error.path.includes("phone")
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </div>
                 </label>
               </div>
@@ -269,6 +358,14 @@ export default function BookingPage() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">Your Home Address</h3>
+                {formErrors.find((error) => error.path.includes("address")) && (
+                  <p className="text-red-500 text-sm">
+                    {
+                      formErrors.find((error) => error.path.includes("address"))
+                        ?.message
+                    }
+                  </p>
+                )}
                 <button type="button" data-expand="YourHomeAddressJ">
                   <img
                     src="/assets/images/icons/bottom-booking-form.svg"
@@ -287,9 +384,8 @@ export default function BookingPage() {
                       placeholder="Enter your complete address"
                       required
                       className="h-full w-full pl-[50px] pr-[14px] pt-[14px] font-semibold leading-7 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                      name=""
+                      name="address"
                       id=""
-                      defaultValue={""}
                     />
                     <img
                       src="/assets/images/icons/school-booking-form.svg"
@@ -300,22 +396,28 @@ export default function BookingPage() {
                 </label>
                 <label className="flex flex-col gap-2">
                   <h4 className="font-semibold">City</h4>
+                  {formErrors.find((error) => error.path.includes("city")) && (
+                    <p className="text-red-500 text-sm">
+                      {
+                        formErrors.find((error) => error.path.includes("city"))
+                          ?.message
+                      }
+                    </p>
+                  )}
                   <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
                     <img
                       src="/assets/images/icons/location-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <select
                       value={formData.city}
                       onChange={handleChange}
-                      name=""
+                      name="city"
                       id=""
                       className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
                     >
-                      <option value="" disabled selected>
-                        Enter the city name
-                      </option>
+                      <option value="Null">Enter the city name</option>
                       {cities.map((city) => (
                         <option key={city} value={city}>
                           {city}
@@ -335,9 +437,10 @@ export default function BookingPage() {
                     <img
                       src="/assets/images/icons/ball-booking-form.svg"
                       alt="icon"
-                      className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                      className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                     />
                     <input
+                      name="post_code"
                       value={formData.post_code}
                       onChange={handleChange}
                       required
@@ -345,6 +448,17 @@ export default function BookingPage() {
                       placeholder="What’s your postal code"
                       type="tel"
                     />
+                    {formErrors.find((error) =>
+                      error.path.includes("post_code")
+                    ) && (
+                      <p className="text-red-500 text-sm">
+                        {
+                          formErrors.find((error) =>
+                            error.path.includes("post_code")
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </div>
                 </label>
               </div>
