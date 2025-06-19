@@ -1,6 +1,179 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import type { BookingFormData, CartItem, HomeService } from "../types/type";
+import type { z } from "zod";
+import apiClinet from "../services/apiServices";
+import { paymentSchema } from "../types/validationBooking";
+
+type FormData = {
+  proof: File | null;
+  service_ids: number[];
+};
 
 export default function PaymentPage() {
+  // 1. ambil data di localstorage cart dan bookingdata.
+  // 2. data keranjang harus di cek lagi apakah datanya di backend
+  // 3. kalkulasi
+  // 4. melakukan persiapan data utk di kirim di endpoint transaction
+  // 5. kirim data ke endpoint
+
+  const [formData, setFormData] = useState<FormData>({
+    proof: null,
+    service_ids: [],
+  });
+
+  const [serviceDetails, setServiceDetails] = useState<HomeService[]>([]);
+  const [bookingData, setBookingData] = useState<BookingFormData | null>(null);
+  const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const TAX_RATE = 0.12;
+  const navigate = useNavigate();
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const fetchServiceDetails = async (cartItems: CartItem[]) => {
+    try {
+      const fetchedDetails = await Promise.all(
+        cartItems.map(async (item) => {
+          const response = await apiClinet.get(`/service/${item.slug}`);
+          return response.data.data;
+        })
+      );
+      setServiceDetails(fetchedDetails);
+      setLoading(false);
+
+      const serviceIds = fetchedDetails.map((service) => service.id);
+      setFormData((prevData) => ({
+        ...prevData,
+        service_ids: serviceIds,
+      }));
+    } catch (error) {
+      console.log("Error fetching service details:", error);
+      setError("failed to fetch service details");
+      setLoading(false);
+    }
+  };
+
+  // load cart and booking data, fetch services
+  useEffect(() => {
+    const cartData = localStorage.getItem("cart");
+    const savedBookingData = localStorage.getItem("bookingData");
+
+    if (savedBookingData) {
+      setBookingData(JSON.parse(savedBookingData) as BookingFormData);
+    }
+
+    if (!cartData || (cartData && JSON.parse(cartData).length === 0)) {
+      navigate("/");
+      return;
+    }
+
+    const cartItems = JSON.parse(cartData) as CartItem[];
+    fetchServiceDetails(cartItems);
+  }, [navigate]);
+
+  const subtotal = serviceDetails.reduce(
+    (acc, service) => acc + service.price,
+    0
+  );
+  const tax = subtotal * TAX_RATE;
+  const total = subtotal + tax;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    setFormData((prev) => ({
+      ...prev,
+      proof: file,
+    }));
+  };
+
+  // handle submit form to api transaction
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const validation = paymentSchema.safeParse(formData);
+
+    if (!validation.success) {
+      setFormErrors(validation.error.issues);
+      return;
+    }
+
+    setFormErrors([]);
+
+    const submissionData = new FormData();
+
+    if (formData.proof) {
+      submissionData.append("proof", formData.proof);
+    }
+
+    if (bookingData) {
+      submissionData.append("name", bookingData.name);
+      submissionData.append("email", bookingData.email);
+      submissionData.append("phone", bookingData.phone);
+      submissionData.append("address", bookingData.address);
+      submissionData.append("city", bookingData.city);
+      submissionData.append("post_code", bookingData.post_code);
+      submissionData.append("started_time", bookingData.started_time);
+      submissionData.append("schedule_at", bookingData.schedule_at);
+    }
+
+    formData.service_ids.forEach((id, index) => {
+      submissionData.append(`service_ids[${index}]`, String(id));
+    });
+
+    try {
+      setLoading(true);
+      const response = await apiClinet.post(
+        "/booking-transaction",
+        submissionData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        console.log("Transaction response data:", response.data.data);
+        const bookingTrxId = response.data.data.booking_trx_id;
+
+        if (!bookingTrxId) {
+          console.error("Error: booking_trx_id is undefined");
+        }
+        setSuccessMessage("Payment proof uploaded successfully!");
+        localStorage.removeItem("cart");
+        localStorage.removeItem("bookingData");
+        setFormData({ proof: null, service_ids: [] });
+        setLoading(false);
+        navigate(`/success-booking?trx_id=${bookingTrxId}`);
+      } else {
+        console.error("Unexpected response status:", response.status);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error submitting payment proof:", error);
+      setLoading(false);
+      setFormErrors([]);
+    }
+  };
+
+  if (loading) {
+    return <p>Loading data...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading data: {error}</p>;
+  }
+
   return (
     <main className="relative min-h-screen mx-auto w-full max-w-[640px] bg-[#F4F5F7]">
       <div id="Background" className="absolute left-0 right-0 top-0">
@@ -191,7 +364,9 @@ export default function PaymentPage() {
                   />
                   <p className="text-shujia-gray">Sub Total</p>
                 </div>
-                <strong className="font-semibold">Rp 180.394.392</strong>
+                <strong className="font-semibold">
+                  {formatCurrency(subtotal)}
+                </strong>
               </div>
               <hr className="border-shujia-graylight" />
               <div className="flex justify-between">
@@ -201,9 +376,9 @@ export default function PaymentPage() {
                     alt="icon"
                     className="h-[24px] w-[24px] shrink-0"
                   />
-                  <p className="text-shujia-gray">Tax 11%</p>
+                  <p className="text-shujia-gray">Tax 12%</p>
                 </div>
-                <strong className="font-semibold">Rp 18.495.699</strong>
+                <strong className="font-semibold">{formatCurrency(tax)}</strong>
               </div>
               <hr className="border-shujia-graylight" />
               <div className="flex justify-between">
@@ -240,13 +415,13 @@ export default function PaymentPage() {
                   <p className="text-shujia-gray">Grand Total</p>
                 </div>
                 <strong className="text-[20px] font-bold leading-[30px] text-shujia-orange">
-                  Rp 189.398.391
+                  {formatCurrency(total)}
                 </strong>
               </div>
             </div>
           </section>
         </div>
-        <form action="booking-finished.html" className="mt-[20px]">
+        <form onSubmit={handleSubmit} className="mt-[20px]">
           <section className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Confirmation</h3>
@@ -274,8 +449,9 @@ export default function PaymentPage() {
                     Upload Image
                   </p>
                   <input
+                    onChange={handleChange}
                     type="file"
-                    name="file-upload"
+                    name="proof"
                     id="file-upload"
                     className="opacity-0 w-full pl-[50px] font-semibold file:hidden"
                   />
