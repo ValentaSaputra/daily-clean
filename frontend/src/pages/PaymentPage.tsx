@@ -30,6 +30,8 @@ export default function PaymentPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [fileName, setFileName] = useState<string | null>(null);
+
   const TAX_RATE = 0.12;
   const navigate = useNavigate();
 
@@ -95,6 +97,7 @@ export default function PaymentPage() {
       ...prev,
       proof: file,
     }));
+    setFileName(file ? file.name : null);
   };
 
   // handle submit form to api transaction
@@ -144,8 +147,9 @@ export default function PaymentPage() {
       );
 
       if (response.status === 200 || response.status === 201) {
-        console.log("Transaction response data:", response.data.data);
+        // console.log("Transaction response data:", response.data.data);
         const bookingTrxId = response.data.data.booking_trx_id;
+        const email = response.data.data.email;
 
         if (!bookingTrxId) {
           console.error("Error: booking_trx_id is undefined");
@@ -155,7 +159,7 @@ export default function PaymentPage() {
         localStorage.removeItem("bookingData");
         setFormData({ proof: null, service_ids: [] });
         setLoading(false);
-        navigate(`/success-booking?trx_id=${bookingTrxId}`);
+        navigate(`/success-booking?trx_id=${bookingTrxId}&email=${email}`);
       } else {
         console.error("Unexpected response status:", response.status);
         setLoading(false);
@@ -445,7 +449,7 @@ export default function PaymentPage() {
                     id="upload"
                     className="absolute left-12 top-1/2 -translate-y-1/2 py-[50px] text-shujia-gray"
                   >
-                    Upload Image
+                    {fileName ? fileName : "Upload Image"}
                   </p>
                   <input
                     onChange={handleChange}
