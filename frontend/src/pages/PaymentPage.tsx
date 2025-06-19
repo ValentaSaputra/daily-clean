@@ -4,6 +4,7 @@ import type { BookingFormData, CartItem, HomeService } from "../types/type";
 import type { z } from "zod";
 import apiClinet from "../services/apiServices";
 import { paymentSchema } from "../types/validationBooking";
+import AccordionSection from "../components/AccordionSection";
 
 type FormData = {
   proof: File | null;
@@ -166,6 +167,19 @@ export default function PaymentPage() {
     }
   };
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
+
   if (loading) {
     return <p>Loading data...</p>;
   }
@@ -185,21 +199,30 @@ export default function PaymentPage() {
       </div>
       <section
         id="NavTop"
-        className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+        className={`fixed left-0 right-0 z-30 transition-all duration-300 
+          ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
           <div
             id="ContainerNav"
-            className="relative flex h-[68px] items-center justify-center transition-all duration-300"
+            className={`relative flex h-[68px] items-center justify-center transition-all duration-300 ${
+              isScrolled
+                ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
+                : "bg-transparent"
+            }`}
           >
             <Link
               to={"/booking"}
               id="BackA"
-              className="absolute left-0 transition-all duration-300"
+              className={`absolute left-0 transition-all duration-300  ${
+                isScrolled ? "pl-3" : ""
+              }`}
             >
               <div
                 id="Back"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white ${
+                  isScrolled ? "border border-shujia-graylight " : ""
+                }`}
               >
                 <img
                   src="/assets/images/icons/back.svg"
@@ -210,7 +233,9 @@ export default function PaymentPage() {
             </Link>
             <h2
               id="Title"
-              className="font-semibold text-white transition-all duration-300"
+              className={`font-semibold transition-all duration-300 ${
+                isScrolled ? "" : "text-white"
+              }`}
             >
               Booking Services
             </h2>
@@ -272,20 +297,10 @@ export default function PaymentPage() {
           <p className="text-white">Dibayar dulu nanti baru dikerjain</p>
         </header>
         <div className="mt-[20px] flex flex-col gap-5">
-          <section
-            id="AvailablePayment"
-            className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+          <AccordionSection
+            title="Available Payment"
+            iconSrc="/assets/images/icons/bottom-booking-form.svg"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Available Payment</h3>
-              <button type="button" data-expand="AvailablePaymentJ">
-                <img
-                  src="/assets/images/icons/bottom-booking-form.svg"
-                  alt="icon"
-                  className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                />
-              </button>
-            </div>
             <div id="AvailablePaymentJ" className="flex flex-col gap-4">
               <div className="flex gap-4">
                 <div className="flex h-[60px] w-[81px] items-center justify-center overflow-hidden">
@@ -339,21 +354,12 @@ export default function PaymentPage() {
                 </div>
               </div>
             </div>
-          </section>
-          <section
-            id="BookingDetails"
-            className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+          </AccordionSection>
+
+          <AccordionSection
+            title="Booking Details"
+            iconSrc="/assets/images/icons/bottom-booking-form.svg"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Booking Details</h3>
-              <button type="button" data-expand="BookingDetailsJ">
-                <img
-                  src="/assets/images/icons/bottom-booking-form.svg"
-                  alt="icon"
-                  className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                />
-              </button>
-            </div>
             <div className="flex flex-col gap-4" id="BookingDetailsJ">
               <div className="flex justify-between">
                 <div className="flex items-center gap-[10px]">
@@ -419,20 +425,13 @@ export default function PaymentPage() {
                 </strong>
               </div>
             </div>
-          </section>
+          </AccordionSection>
         </div>
         <form onSubmit={handleSubmit} className="mt-[20px]">
-          <section className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Confirmation</h3>
-              <button type="button" data-expand="ConfirmationJ">
-                <img
-                  src="/assets/images/icons/bottom-booking-form.svg"
-                  alt="icon"
-                  className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-                />
-              </button>
-            </div>
+          <AccordionSection
+            title="Confirmation"
+            iconSrc="/assets/images/icons/bottom-booking-form.svg"
+          >
             <div id="ConfirmationJ" className="flex flex-col gap-4">
               <label className="flex flex-col gap-2">
                 <h4 className="font-semibold">Add Proof of Payment</h4>
@@ -458,7 +457,7 @@ export default function PaymentPage() {
                 </div>
               </label>
             </div>
-          </section>
+          </AccordionSection>
           <button
             type="submit"
             className="mt-[54px] w-full rounded-full bg-shujia-orange py-[14px] font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]"
