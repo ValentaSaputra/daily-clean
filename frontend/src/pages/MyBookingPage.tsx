@@ -4,6 +4,7 @@ import type { BookingDetails } from "../types/type";
 import { viewBookingSchema } from "../types/validationBooking";
 import apiClinet from "../services/apiServices";
 import { isAxiosError } from "axios";
+import { Link } from "react-router-dom";
 
 export default function MyBookingPage() {
   const [formData, setFormData] = useState({
@@ -205,59 +206,124 @@ export default function MyBookingPage() {
                   />
                 </button>
               </div>
-              <div id="BookingStatusJ" className="relative w-full pb-[42px]">
-                <div className="flex">
-                  <div className="flex flex-col items-center">
-                    <div className="relative z-10 flex h-[25px] items-center">
-                      <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
-                      <div className="absolute h-2 w-[60px] rounded-full bg-[#0CA024]" />
-                      <div className="absolute right-0 top-0 translate-x-1/2">
+
+              {bookingDetails.is_paid ? (
+                <div
+                  id="BookingStatusJ completedbooking"
+                  className="relative w-full pb-[42px]"
+                >
+                  <div className="flex">
+                    <div className="flex flex-col items-center">
+                      <div className="relative z-10 flex h-[25px] items-center">
+                        <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
+                        <div className="absolute h-2 w-[60px] rounded-full bg-[#0CA024]" />
+                        <div className="absolute right-0 top-0 translate-x-1/2">
+                          <div className="flex flex-col items-center gap-[6px]">
+                            <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
+                              1
+                            </div>
+                            <p className="text-center text-xs font-semibold leading-[18px]">
+                              Booking
+                              <br />
+                              Created
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative flex h-[25px] w-full items-center">
+                      <div className="h-2 w-full rounded-full bg-[#F4F5F7]" />
+                      <div className="absolute h-2 w-1/2 rounded-full bg-[#0CA024]" />
+                      <div className="absolute right-1/2 top-0 z-10 translate-x-1/2">
                         <div className="flex flex-col items-center gap-[6px]">
                           <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
-                            1
+                            2
                           </div>
-                          <p className="text-xs text-center font-semibold leading-[18px]">
-                            Booking
+                          <p className="text-center text-xs font-semibold leading-[18px]">
+                            Verifying
                             <br />
-                            Created
+                            Payment
+                          </p>
+                        </div>
+                      </div>
+                      <div className="absolute right-0 h-2 w-1/2 rounded-full bg-[#0CA024]" />
+                    </div>
+                    <div className="relative z-10 flex h-[25px] w-[60px] items-center">
+                      <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
+                      <div className="absolute h-2 w-full rounded-full bg-[#0CA024]" />
+                      <div className="absolute left-0 top-0 -translate-x-1/2">
+                        <div className="flex flex-col items-center gap-[6px]">
+                          <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
+                            3
+                          </div>
+                          <p className="text-center text-xs font-semibold leading-[18px]">
+                            Start
+                            <br />
+                            Working
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="relative flex h-[25px] w-full items-center">
-                    <div className="h-2 w-full rounded-full bg-[#F4F5F7]" />
-                    <div className="absolute h-2 w-1/2 rounded-full bg-[#0CA024]" />
-                    <div className="absolute right-1/2 top-0 translate-x-1/2">
-                      <div className="flex flex-col items-center gap-[6px]">
-                        <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
-                          2
+                </div>
+              ) : (
+                <div
+                  id="BookingStatusJ incomplete"
+                  className="relative w-full pb-[42px]"
+                >
+                  <div className="flex">
+                    <div className="flex flex-col items-center">
+                      <div className="relative z-10 flex h-[25px] items-center">
+                        <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
+                        <div className="absolute h-2 w-[60px] rounded-full bg-[#0CA024]" />
+                        <div className="absolute right-0 top-0 translate-x-1/2">
+                          <div className="flex flex-col items-center gap-[6px]">
+                            <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
+                              1
+                            </div>
+                            <p className="text-xs text-center font-semibold leading-[18px]">
+                              Booking
+                              <br />
+                              Created
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-center font-semibold leading-[18px]">
-                          Verifying
-                          <br />
-                          Payment
-                        </p>
                       </div>
                     </div>
-                  </div>
-                  <div className="relative z-10 flex h-[25px] w-[60px] items-center">
-                    <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
-                    <div className="absolute left-0 top-0 -translate-x-1/2">
-                      <div className="flex flex-col items-center gap-[6px]">
-                        <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
-                          3
+                    <div className="relative flex h-[25px] w-full items-center">
+                      <div className="h-2 w-full rounded-full bg-[#F4F5F7]" />
+                      <div className="absolute h-2 w-1/2 rounded-full bg-[#0CA024]" />
+                      <div className="absolute right-1/2 top-0 translate-x-1/2">
+                        <div className="flex flex-col items-center gap-[6px]">
+                          <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
+                            2
+                          </div>
+                          <p className="text-xs text-center font-semibold leading-[18px]">
+                            Verifying
+                            <br />
+                            Payment
+                          </p>
                         </div>
-                        <p className="text-xs text-center font-semibold leading-[18px]">
-                          Start
-                          <br />
-                          Working
-                        </p>
+                      </div>
+                    </div>
+                    <div className="relative z-10 flex h-[25px] w-[60px] items-center">
+                      <div className="h-2 w-[60px] rounded-full bg-[#F4F5F7]" />
+                      <div className="absolute left-0 top-0 -translate-x-1/2">
+                        <div className="flex flex-col items-center gap-[6px]">
+                          <div className="flex h-[25px] w-[25px] items-center justify-center rounded-full bg-[#0CA024] text-xs font-bold leading-[18px] text-white">
+                            3
+                          </div>
+                          <p className="text-xs text-center font-semibold leading-[18px]">
+                            Start
+                            <br />
+                            Working
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </section>
             <section
               id="WorkingSchedule"
@@ -608,19 +674,8 @@ export default function MyBookingPage() {
         <div className="mx-auto max-w-[640px] px-5">
           <div className="rounded-[24px] bg-shujia-black px-[20px] py-[14px]">
             <ul className="flex items-center gap-[10.67px]">
-              <li className="shrink-0">
-                <a href="#">
-                  <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-shujia-graylight hover:border-shujia-orange">
-                    <img
-                      src="/assets/images/icons/note-form-check-black.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                  </div>
-                </a>
-              </li>
               <li className="w-full">
-                <a href="#">
+                <Link to={`/my-booking`}>
                   <div className="flex items-center justify-center gap-2 rounded-full bg-shujia-orange px-[18px] py-[10px] hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
                     <img
                       src="/assets/images/icons/list-form-check-white.svg"
@@ -631,29 +686,18 @@ export default function MyBookingPage() {
                       My Booking
                     </p>
                   </div>
-                </a>
+                </Link>
               </li>
               <li className="shrink-0">
-                <a href="#">
+                <Link to={`/`}>
                   <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-shujia-graylight hover:border-shujia-orange">
                     <img
-                      src="/assets/images/icons/chat.svg"
+                      src="/assets/images/icons/note-form-check-black.svg"
                       alt="icon"
                       className="h-[22px] w-[22px] shrink-0"
                     />
                   </div>
-                </a>
-              </li>
-              <li className="shrink-0">
-                <a href="#">
-                  <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-shujia-graylight hover:border-shujia-orange">
-                    <img
-                      src="/assets/images/icons/profil.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                  </div>
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
