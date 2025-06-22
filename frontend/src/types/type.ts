@@ -39,6 +39,7 @@ export interface BookingDetails {
     name: string,
     phone: string,
     email: string,
+    proof: string | null,
     address: string,
     post_code: string,
     city: string,
@@ -54,7 +55,7 @@ export interface BookingDetails {
 
 interface TransactionDetails {
     id: number,
-    price: string,
+    price: number,
     home_service_id: number,
     home_service: HomeService,
 }
