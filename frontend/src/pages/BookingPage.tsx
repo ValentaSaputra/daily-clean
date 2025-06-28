@@ -197,7 +197,7 @@ export default function BookingPage() {
             <h1 className="text-[26px] font-extrabold leading-[39px] text-white">
               Start Booking
             </h1>
-            <p className="text-white">Lorem dolor si amet data asli</p>
+            <p className="text-white">Please fill out the form below</p>
           </header>
           <div className="mt-[20px] flex flex-col gap-5">
             <AccordionSection

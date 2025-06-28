@@ -437,17 +437,17 @@ export default function PaymentPage() {
             iconSrc="/assets/images/icons/bottom-booking-form.svg"
           >
             <div id="ConfirmationJ" className="flex flex-col gap-4">
-              <label className="flex flex-col gap-2">
+              <label className="flex flex-col gap-2 ">
                 <h4 className="font-semibold">Add Proof of Payment</h4>
                 <div className="relative flex h-[52px] w-full items-center overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
                   <img
                     src="/assets/images/icons/proof-payment.svg"
                     alt="icon"
-                    className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                    className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
                   />
                   <p
                     id="upload"
-                    className="absolute left-12 top-1/2 -translate-y-1/2 py-[50px] text-shujia-gray"
+                    className="w-full pl-[50px] font-semibold text-shujia-gray transition-all duration-300 cursor-pointer"
                   >
                     {fileName ? fileName : "Upload Image"}
                   </p>

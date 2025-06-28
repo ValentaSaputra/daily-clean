@@ -106,7 +106,7 @@ export default function SuccessBookingPage() {
               <img
                 src="/assets/images/icons/note-id-finished.svg"
                 alt="icon"
-                className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
               />
               <input
                 readOnly
@@ -123,7 +123,7 @@ export default function SuccessBookingPage() {
               <img
                 src="/assets/images/icons/amplop-booking-form.svg"
                 alt="icon"
-                className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
               />
               <input
                 readOnly
